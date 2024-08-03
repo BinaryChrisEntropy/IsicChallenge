@@ -1,38 +1,17 @@
 import h5py
 import numpy as np
 import pandas as pd
+import dataset
 import matplotlib.pyplot as plt
-import os
-import cv2 as cv
 from sklearn.model_selection import train_test_split 
 from sklearn.metrics import roc_curve, auc
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torchvision import transforms, models
 from torchvision.transforms import v2
 from tqdm import tqdm
 from torch.utils.data import WeightedRandomSampler
 
-
-class CustomDataset(Dataset):
-    def __init__(self, df, tf, path="data\\train-image\\image\\"):
-        self.df = df
-        self.path = path
-        self.tf = tf
-    
-    def __len__(self):
-        return len(self.df)
-    
-    def __getitem__(self, index):
-        rec = self.df.iloc[index]
-        y = rec["target"]
-        file_name = rec["isic_id"] + ".jpg"
-        file_name = os.path.join(self.path, file_name)
-    
-        x = cv.imread(file_name)
-        x = cv.cvtColor(x, cv.COLOR_BGR2RGB)
-        x = self.tf(x)  
-        return x, y
 
 
 @torch.enable_grad
@@ -92,8 +71,6 @@ class Model(torch.nn.Module):
         
 
 
-
-
 if __name__ == "__main__":
     df_meta_train = pd.read_csv("data\\train-metadata.csv")
     df_meta_test = pd.read_csv("data\\test-metadata.csv")
@@ -112,8 +89,8 @@ if __name__ == "__main__":
     tf_test = v2.Compose([v2.ToImage(), v2.Resize(120, antialias=True) , v2.ToDtype(torch.float32, scale=True), 
                       v2.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])])
 
-    ds_train = CustomDataset(train_X, tf=tf_train)
-    ds_test = CustomDataset(test_X, tf=tf_test)
+    ds_train = dataset.CustomDataset(train_X, tf=tf_train)
+    ds_test = dataset.CustomDataset(test_X, tf=tf_test)
 
     freq_c1 = train_X["target"].sum()
     freq_c2 = len(train_X) - train_X["target"].sum()
