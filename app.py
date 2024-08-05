@@ -111,8 +111,6 @@ if __name__ == "__main__":
 
     sampler_train = WeightedRandomSampler(weights=w_train, num_samples=len(ds_train), replacement=True)
     train_loader = DataLoader(ds_train, sampler=sampler_train, batch_size=32, num_workers=4)
-    #train_loader = DataLoader(ds_train, batch_size=64, num_workers=4, shuffle=True)
-
     test_loader = DataLoader(ds_test, batch_size=512, num_workers=4)
     criterion = torch.nn.BCEWithLogitsLoss()
     n_epochs = 5
