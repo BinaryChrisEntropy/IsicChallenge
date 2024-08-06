@@ -1,5 +1,3 @@
-import h5py
-import numpy as np
 import pandas as pd
 import dataset
 import matplotlib.pyplot as plt
@@ -7,10 +5,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, auc
 import torch
 from torch.utils.data import DataLoader
-from torchvision import transforms, models
 from torchvision.transforms import v2
 from tqdm import tqdm
 from torch.utils.data import WeightedRandomSampler
+from architecture import Model
 
 
 
@@ -54,21 +52,7 @@ def test(model, loader):
                     
     return sum(paucs) / len(paucs)
     
-        
-        
-class Model(torch.nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.backbone = models.resnet50(weights=None)
-        n_feat = self.backbone.fc.in_features
-        self.backbone.fc = torch.nn.Sequential(
-            torch.nn.Linear(n_feat, 1)
-        )
-        
-    def forward(self, x):
-        x = self.backbone(x)
-        return x
-        
+                
 
 
 if __name__ == "__main__":
